@@ -1,0 +1,21 @@
+.tree-item {
+  &.expandless {
+    span {
+      padding-left: 28px;
+    }
+  }
+
+  span {
+    height: 28px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    cursor: pointer;
+
+
+    img {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+  }
+}
