@@ -14,7 +14,6 @@ interface Props {
   onClick: (node: TreeNode) => void;
 }
 
-
 /**
  * @docs returns 'undefined' if not loaded yet
  */
@@ -38,6 +37,20 @@ function getSubItems(item: TreeNode): NonRootNode[] | undefined {
   }
 }
 
+function getIconPath(item: TreeNode): string {
+  let iconName = "location";
+
+  if (item instanceof Company || item instanceof Location) {
+    iconName = "location";
+  } else if (item instanceof Asset) {
+    iconName = "asset";
+  } else {
+    iconName = "component";
+  }
+
+  return `/${iconName}.png`;
+}
+
 const TreeItem: React.FC<Props> = (props) => {
   const { item, onClick } = props;
   const [isOpen, setIsOpen] = useState(false);
@@ -51,19 +64,7 @@ const TreeItem: React.FC<Props> = (props) => {
     setIsOpen((prev) => !prev);
   };
 
-  const icon = useMemo(() => {
-    let iconName = "location";
-
-    if (item instanceof Company || item instanceof Location) {
-      iconName = "location";
-    } else if (item instanceof Asset) {
-      iconName = "asset";
-    } else {
-      iconName = "component";
-    }
-
-    return <img src={`/${iconName}.png`}></img>;
-  }, [item]);
+  const icon = useMemo(() => <img src={getIconPath(item)}></img>, [item]);
 
   const children = useMemo(() => {
     if (!isOpen) return null;
