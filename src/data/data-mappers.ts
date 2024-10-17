@@ -3,9 +3,7 @@ import { Asset, Company, Component, Location } from "./data-models";
 export const mapCompanies = (
   apiCompanies: Record<string, string>[]
 ): Company[] => {
-  return apiCompanies.map(
-    (company) => new Company(company.id, company.name)
-  );
+  return apiCompanies.map((company) => new Company(company.id, company.name));
 };
 
 export const mapLocations = (
@@ -75,8 +73,6 @@ export const mapLocationAssets = (
   const rootAssetsMap = new Map<string, Array<Component | Asset>>();
   const childrenAssetsMap = new Map<string | null, Array<Asset | Component>>();
 
-  console.log(apiAssets);
-
   for (const apiAsset of apiAssets) {
     if (apiAsset.locationId != null) {
       if (!rootAssetsMap.has(apiAsset.locationId)) {
@@ -96,8 +92,6 @@ export const mapLocationAssets = (
         .push(mapAssetOrComponent(apiAsset));
     }
   }
-
-  console.log(rootAssetsMap, childrenAssetsMap);
 
   const assetsStack: Asset[] = Array.from(rootAssetsMap.values())
     .flat(2)
@@ -139,7 +133,9 @@ export const mapLocationAssets = (
         new Location(
           location.id,
           location.name,
-          populateLocationAssets(location.children ?? []),
+          location.children?.length
+            ? populateLocationAssets(location.children)
+            : undefined,
           rootAssetsMap.get(location.id)
         )
     );

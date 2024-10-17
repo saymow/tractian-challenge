@@ -1,28 +1,29 @@
 import { useEffect } from "react";
-import useData from "../../data/use-data";
 import Card from "../../components/card";
-import "./styles.scss";
 import Tree from "../../components/tree";
+import useData from "../../data/use-data";
+import "./styles.scss";
 
 const Dashboard: React.FC = () => {
   const {
     companies,
     fetchCompanies,
-    fetchCompanyDetails: fetchCompaniesLocations,
+    fetchCompanyDetails,
+    updateSelectedComponent,
   } = useData();
 
   useEffect(() => {
     fetchCompanies();
   }, [fetchCompanies]);
 
-  const handleCompanyClick = (companyId: string) => {
-    fetchCompaniesLocations(companyId);
-  };
-
   return (
     <main className="dashboard-container">
       <Card>
-        <Tree companies={companies} onCompanyClick={handleCompanyClick} />
+        <Tree
+          companies={companies}
+          onComponentClick={updateSelectedComponent}
+          onCompanyClick={fetchCompanyDetails}
+        />
       </Card>
       <Card>
         <p>todo</p>

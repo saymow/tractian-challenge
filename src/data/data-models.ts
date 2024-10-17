@@ -31,6 +31,9 @@ export class Component {
     public readonly sensorId: string,
     public readonly sensorType: string,
     public readonly status: string,
-    public readonly gatewayId: string
+    public readonly gatewayId: string,
+    public selected?: boolean
   ) {}
 }
+
+export type Node = Company | Location | Asset | Component;

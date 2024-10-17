@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Asset, Company, Component, Location } from "../../../data/data-models";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -9,91 +9,164 @@ export type RootNode = Company;
 export type NonRootNode = Location | Asset | Component;
 export type TreeNode = RootNode | NonRootNode;
 
-interface Props {
-  item: TreeNode;
-  onClick: (node: TreeNode) => void;
+interface Props<T> {
+  item: T;
+  onClick: (node: TreeNode, open: boolean) => void;
 }
 
-/**
- * @docs returns 'undefined' if not loaded yet
- */
-function getSubItems(item: TreeNode): NonRootNode[] | undefined {
-  if (item instanceof Company) {
-    return item.locations;
-  } else if (item instanceof Location) {
-    if (!("assets" in item) && !("children" in item)) {
-      return undefined;
-    }
-
-    return [...(item.assets ?? []), ...(item.children ?? [])];
-  } else if (item instanceof Asset) {
-    if (!("components" in item) && !("children" in item)) {
-      return undefined;
-    }
-
-    return [...(item.components ?? []), ...(item.children ?? [])];
-  } else {
-    return [];
-  }
-}
-
-function getIconPath(item: TreeNode): string {
-  let iconName = "location";
-
-  if (item instanceof Company || item instanceof Location) {
-    iconName = "location";
-  } else if (item instanceof Asset) {
-    iconName = "asset";
-  } else {
-    iconName = "component";
-  }
-
-  return `/${iconName}.png`;
-}
-
-const TreeItem: React.FC<Props> = (props) => {
+const TreeCompany: React.FC<Props<Company>> = (props) => {
   const { item, onClick } = props;
   const [isOpen, setIsOpen] = useState(false);
-  const subItems: NonRootNode[] | undefined = useMemo(
-    () => getSubItems(item),
-    [item]
-  );
 
   const handleClick = () => {
-    if (!isOpen) onClick(item);
+    onClick(item, !isOpen, []);
     setIsOpen((prev) => !prev);
   };
 
-  const icon = useMemo(() => <img src={getIconPath(item)}></img>, [item]);
+  const expandIcon = useMemo(() => {
+    if (isOpen) return <ExpandLessIcon />;
+    else return <ExpandMoreIcon />;
+  }, [isOpen]);
 
   const children = useMemo(() => {
-    if (!isOpen) return null;
+    if (!isOpen || !item.locations) return null;
 
     return (
       <ul className="tree-container">
-        {subItems?.map((subItem) => (
+        {item.locations.map((subItem) => (
           <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
         ))}
       </ul>
     );
-  }, [isOpen, onClick, subItems]);
-
-  const expandIcon = useMemo(() => {
-    if (subItems?.length == 0) return null;
-    if (isOpen) return <ExpandLessIcon />;
-    else return <ExpandMoreIcon />;
-  }, [isOpen, subItems]);
+  }, [item, isOpen, onClick]);
 
   return (
     <li className={cn("tree-item", { expandless: !expandIcon })}>
       <span onClick={handleClick}>
         {expandIcon}
-        {icon}
+        <img src={"./location.png"}></img>
         {item.name}
       </span>
       {children}
     </li>
   );
+};
+
+const TreeLocation: React.FC<Props<Location>> = (props) => {
+  const { item, onClick } = props;
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleClick = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  const expandIcon = useMemo(() => {
+    if (!item.assets && !item.children) return null;
+    if (isOpen) return <ExpandLessIcon />;
+    else return <ExpandMoreIcon />;
+  }, [isOpen, item]);
+
+  const children = useMemo(() => {
+    if (!isOpen || (!item.assets && !item.children)) return null;
+
+    return (
+      <ul className="tree-container">
+        {(item.children ?? []).map((subItem) => (
+          <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
+        ))}
+        {(item.assets ?? []).map((subItem) => (
+          <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
+        ))}
+      </ul>
+    );
+  }, [item, isOpen, onClick]);
+
+  return (
+    <li className={cn("tree-item", { expandless: !expandIcon })}>
+      <span onClick={handleClick}>
+        {expandIcon}
+        <img src={"./location.png"}></img>
+        {item.name}
+      </span>
+      {children}
+    </li>
+  );
+};
+
+const TreeAsset: React.FC<Props<Asset>> = (props) => {
+  const { item, onClick } = props;
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleClick = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  const expandIcon = useMemo(() => {
+    if (!item.children && !item.components) return null;
+    if (isOpen) return <ExpandLessIcon />;
+    else return <ExpandMoreIcon />;
+  }, [isOpen, item.children, item.components]);
+
+  const children = useMemo(() => {
+    if (!isOpen || (!item.components && !item.children)) return null;
+
+    return (
+      <ul className="tree-container">
+        {(item.children ?? []).map((subItem) => (
+          <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
+        ))}
+        {(item.components ?? []).map((subItem) => (
+          <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
+        ))}
+      </ul>
+    );
+  }, [item, isOpen, onClick]);
+
+  return (
+    <li className={cn("tree-item", { expandless: !expandIcon })}>
+      <span onClick={handleClick}>
+        {expandIcon}
+        <img src={"./asset.png"}></img>
+        {item.name}
+      </span>
+      {children}
+    </li>
+  );
+};
+
+const TreeComponent: React.FC<Props<Component>> = (props) => {
+  const { item, onClick } = props;
+
+  const handleClick = () => {
+    onClick(item, true);
+  };
+
+  return (
+    <li
+      className={cn("tree-item", "expandless", "component", {
+        active: item.selected,
+      })}
+    >
+      <span onClick={handleClick}>
+        <img src="./component.png"></img>
+        {item.name}
+      </span>
+    </li>
+  );
+};
+
+const TreeItem: React.FC<Props<TreeNode>> = (props) => {
+  const { item, onClick } = props;
+
+  if (item instanceof Company) {
+    return <TreeCompany item={item} onClick={onClick} />;
+  } else if (item instanceof Location) {
+    return <TreeLocation item={item} onClick={onClick} />;
+  } else if (item instanceof Asset) {
+    return <TreeAsset item={item} onClick={onClick} />;
+  } else {
+    return <TreeComponent item={item} onClick={onClick} />;
+  }
 };
 
 export default TreeItem;

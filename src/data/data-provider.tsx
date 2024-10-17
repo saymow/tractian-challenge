@@ -2,11 +2,12 @@ import { ReactNode, useCallback, useState } from "react";
 import api from "../api";
 import DataCtx from "./data-context";
 import { mapCompanies, mapLocationAssets, mapLocations } from "./data-mappers";
-import { Company } from "./data-models";
+import { Company, Component } from "./data-models";
 import { ExternalData } from "./data-type";
 
 const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [companies, setCompanies] = useState<ExternalData<Company[]>>({});
+  const [selectedComponent, setSelectedComponent] = useState<Component>();
 
   const fetchCompanies = useCallback(async () => {
     try {
@@ -45,12 +46,31 @@ const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     });
   }, []);
 
+  const updateSelectedComponent = useCallback(
+    (component: Component) => {
+      if (selectedComponent?.id === component.id) {
+        component.selected = false;
+        setCompanies((prev) => ({ ...prev }));
+        setSelectedComponent(undefined);
+        return;
+      }
+
+      if (selectedComponent) selectedComponent.selected = false;
+      component.selected = true;
+      setCompanies((prev) => ({ ...prev }));
+      setSelectedComponent(component);
+    },
+    [selectedComponent, setSelectedComponent]
+  );
+
   return (
     <DataCtx.Provider
       value={{
         companies,
+        selectedComponent,
         fetchCompanies,
         fetchCompanyDetails,
+        updateSelectedComponent,
       }}
     >
       {children}
