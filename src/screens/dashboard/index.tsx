@@ -3,10 +3,12 @@ import Card from "../../components/card";
 import Tree from "../../components/tree";
 import useData from "../../data/use-data";
 import "./styles.scss";
+import ComponentView from "../../components/component-view";
 
 const Dashboard: React.FC = () => {
   const {
     companies,
+    selectedComponent,
     fetchCompanies,
     fetchCompanyDetails,
     updateSelectedComponent,
@@ -26,7 +28,7 @@ const Dashboard: React.FC = () => {
         />
       </Card>
       <Card>
-        <p>todo</p>
+        {selectedComponent && <ComponentView component={selectedComponent} />}
       </Card>
     </main>
   );

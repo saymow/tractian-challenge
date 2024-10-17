@@ -1,0 +1,62 @@
+.component {
+  display: flex;
+  flex-direction: column;
+}
+
+.component > header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e3eaef;
+  padding: 16px;
+}
+
+.component > header h2 {
+  text-transform: uppercase;
+}
+
+.component_info {
+  padding: 24px;
+}
+
+.component_main_info {
+  display: flex;
+  gap: 16px;
+
+  border-bottom: 1px solid #e3eaef;
+  padding-bottom: 24px;
+}
+
+.component_main_info > section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.component_main_info > section hr {
+  width: 100%;
+  border-top: 1px solid #e3eaef;
+}
+
+.component_data_value {
+  font-size: 16px;
+}
+
+.component_data_value div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.component_data_value p {
+  color: #88929c;
+  line-height: 6px;
+}
+
+.component_info > footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 24px 0;
+}
