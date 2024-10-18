@@ -1,5 +1,13 @@
 .dashboard-container {
+  width: 100%;
   display: grid;
   grid-template-columns: 2fr 3fr;
   gap: 0.5rem;
+  height: 100%;
+  overflow: hidden;
+}
+
+.tree-container {
+  height: 100%;
+  overflow-y: auto;
 }

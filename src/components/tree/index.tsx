@@ -1,4 +1,4 @@
-import { Node, Company, Location, Component } from "../../data/data-models";
+import { Company, Location, Component } from "../../data/data-models";
 import { ExternalData } from "../../data/data-type";
 import TreeItem from "./tree-item";
 import "./styles.scss";
@@ -12,7 +12,7 @@ interface Props {
 const Tree: React.FC<Props> = (props) => {
   const { companies, onCompanyClick, onComponentClick } = props;
 
-  const handleNodeClick = (node: Company | Location, _: boolean) => {
+  const handleNodeClick = (node: Company | Location) => {
     if (node instanceof Company) {
       onCompanyClick(node.id);
     } else if (node instanceof Component) {

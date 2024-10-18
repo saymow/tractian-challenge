@@ -4,6 +4,7 @@ import Tree from "../../components/tree";
 import useData from "../../data/use-data";
 import "./styles.scss";
 import ComponentView from "../../components/component-view";
+import Panel from "../../components/panel";
 
 const Dashboard: React.FC = () => {
   const {
@@ -19,8 +20,8 @@ const Dashboard: React.FC = () => {
   }, [fetchCompanies]);
 
   return (
-    <main className="dashboard-container">
-      <Card>
+    <Panel className="dashboard-container">
+      <Card className="tree-container">
         <Tree
           companies={companies}
           onComponentClick={updateSelectedComponent}
@@ -30,7 +31,7 @@ const Dashboard: React.FC = () => {
       <Card>
         {selectedComponent && <ComponentView component={selectedComponent} />}
       </Card>
-    </main>
+    </Panel>
   );
 };
 

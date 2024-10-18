@@ -19,7 +19,7 @@ const TreeCompany: React.FC<Props<Company>> = (props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => {
-    onClick(item, !isOpen, []);
+    onClick(item, !isOpen);
     setIsOpen((prev) => !prev);
   };
 
@@ -32,7 +32,7 @@ const TreeCompany: React.FC<Props<Company>> = (props) => {
     if (!isOpen || !item.locations) return null;
 
     return (
-      <ul className="tree-container">
+      <ul className="subtree-container">
         {item.locations.map((subItem) => (
           <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
         ))}
@@ -70,7 +70,7 @@ const TreeLocation: React.FC<Props<Location>> = (props) => {
     if (!isOpen || (!item.assets && !item.children)) return null;
 
     return (
-      <ul className="tree-container">
+      <ul className="subtree-container">
         {(item.children ?? []).map((subItem) => (
           <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
         ))}
@@ -111,7 +111,7 @@ const TreeAsset: React.FC<Props<Asset>> = (props) => {
     if (!isOpen || (!item.components && !item.children)) return null;
 
     return (
-      <ul className="tree-container">
+      <ul className="subtree-container">
         {(item.children ?? []).map((subItem) => (
           <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
         ))}

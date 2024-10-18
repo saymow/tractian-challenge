@@ -41,7 +41,9 @@
 }
 
 .component_data_value {
-  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .component_data_value div {
@@ -52,7 +54,6 @@
 
 .component_data_value p {
   color: #88929c;
-  line-height: 6px;
 }
 
 .component_info > footer {
