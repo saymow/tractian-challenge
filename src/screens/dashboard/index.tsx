@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Card from "../../components/card";
 import Tree from "../../components/tree";
 import useData from "../../data/use-data";
@@ -6,6 +6,7 @@ import "./styles.scss";
 import ComponentView from "../../components/component-view";
 import Panel from "../../components/panel";
 import SearchBar from "../../components/search-bar";
+import { Company, Component, Node } from "../../data/data-models";
 
 const Dashboard: React.FC = () => {
   const {
@@ -14,6 +15,8 @@ const Dashboard: React.FC = () => {
     fetchCompanies,
     fetchCompanyDetails,
     updateSelectedComponent,
+    openNode,
+    closeNode,
   } = useData();
   const [searchText, setSearchText] = useState("");
 
@@ -21,9 +24,23 @@ const Dashboard: React.FC = () => {
     fetchCompanies();
   }, [fetchCompanies]);
 
+  const handleNodeClick = useCallback(
+    (node: Node) => {
+      if (node instanceof Component) {
+        updateSelectedComponent(node);
+      } else if (node instanceof Company && !node.locations) {
+        fetchCompanyDetails(node.id);
+      } else {
+        if (node.isOpen) closeNode(node);
+        else openNode(node);
+      }
+    },
+    [closeNode, fetchCompanyDetails, openNode, updateSelectedComponent]
+  );
+
   return (
     <Panel className="dashboard-container">
-      <Card className="tree-container">
+      <Card className="visualization-container">
         <SearchBar
           value={searchText}
           onChange={setSearchText}
@@ -31,9 +48,8 @@ const Dashboard: React.FC = () => {
         />
         <Tree
           companies={companies}
-          onComponentClick={updateSelectedComponent}
-          onCompanyClick={fetchCompanyDetails}
-          className="tree"
+          onNodeClick={handleNodeClick}
+          className="visualization"
         />
       </Card>
       <Card>

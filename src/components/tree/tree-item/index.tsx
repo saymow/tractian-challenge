@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Asset, Company, Component, Location } from "../../../data/data-models";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -11,25 +11,23 @@ export type TreeNode = RootNode | NonRootNode;
 
 interface Props<T> {
   item: T;
-  onClick: (node: TreeNode, open: boolean) => void;
+  onClick: (node: TreeNode) => void;
 }
 
 const TreeCompany: React.FC<Props<Company>> = (props) => {
   const { item, onClick } = props;
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => {
-    onClick(item, !isOpen);
-    setIsOpen((prev) => !prev);
+    onClick(item);
   };
 
   const expandIcon = useMemo(() => {
-    if (isOpen) return <ExpandLessIcon />;
+    if (item.isOpen) return <ExpandLessIcon />;
     else return <ExpandMoreIcon />;
-  }, [isOpen]);
+  }, [item.isOpen]);
 
   const children = useMemo(() => {
-    if (!isOpen || !item.locations) return null;
+    if (!item.isOpen || !item.locations) return null;
 
     return (
       <ul className="subtree-container">
@@ -38,7 +36,7 @@ const TreeCompany: React.FC<Props<Company>> = (props) => {
         ))}
       </ul>
     );
-  }, [item, isOpen, onClick]);
+  }, [item.isOpen, item.locations, onClick]);
 
   return (
     <li className={cn("tree-item", { expandless: !expandIcon })}>
@@ -54,20 +52,19 @@ const TreeCompany: React.FC<Props<Company>> = (props) => {
 
 const TreeLocation: React.FC<Props<Location>> = (props) => {
   const { item, onClick } = props;
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => {
-    setIsOpen((prev) => !prev);
+    onClick(item);
   };
 
   const expandIcon = useMemo(() => {
     if (!item.assets && !item.children) return null;
-    if (isOpen) return <ExpandLessIcon />;
+    if (item.isOpen) return <ExpandLessIcon />;
     else return <ExpandMoreIcon />;
-  }, [isOpen, item]);
+  }, [item.isOpen, item.assets, item.children]);
 
   const children = useMemo(() => {
-    if (!isOpen || (!item.assets && !item.children)) return null;
+    if (!item.isOpen || (!item.assets && !item.children)) return null;
 
     return (
       <ul className="subtree-container">
@@ -79,7 +76,7 @@ const TreeLocation: React.FC<Props<Location>> = (props) => {
         ))}
       </ul>
     );
-  }, [item, isOpen, onClick]);
+  }, [item.isOpen, item.assets, item.children, onClick]);
 
   return (
     <li className={cn("tree-item", { expandless: !expandIcon })}>
@@ -95,20 +92,19 @@ const TreeLocation: React.FC<Props<Location>> = (props) => {
 
 const TreeAsset: React.FC<Props<Asset>> = (props) => {
   const { item, onClick } = props;
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => {
-    setIsOpen((prev) => !prev);
+    onClick(item);
   };
 
   const expandIcon = useMemo(() => {
     if (!item.children && !item.components) return null;
-    if (isOpen) return <ExpandLessIcon />;
+    if (item.isOpen) return <ExpandLessIcon />;
     else return <ExpandMoreIcon />;
-  }, [isOpen, item.children, item.components]);
+  }, [item.children, item.components, item.isOpen]);
 
   const children = useMemo(() => {
-    if (!isOpen || (!item.components && !item.children)) return null;
+    if (!item.isOpen || (!item.components && !item.children)) return null;
 
     return (
       <ul className="subtree-container">
@@ -120,7 +116,7 @@ const TreeAsset: React.FC<Props<Asset>> = (props) => {
         ))}
       </ul>
     );
-  }, [item, isOpen, onClick]);
+  }, [item.isOpen, item.components, item.children, onClick]);
 
   return (
     <li className={cn("tree-item", { expandless: !expandIcon })}>
@@ -138,7 +134,7 @@ const TreeComponent: React.FC<Props<Component>> = (props) => {
   const { item, onClick } = props;
 
   const handleClick = () => {
-    onClick(item, true);
+    onClick(item);
   };
 
   return (

@@ -3,7 +3,9 @@ import { Asset, Company, Component, Location } from "./data-models";
 export const mapCompanies = (
   apiCompanies: Record<string, string>[]
 ): Company[] => {
-  return apiCompanies.map((company) => new Company(company.id, company.name));
+  return apiCompanies.map(
+    (company) => new Company(company.id, company.name, false)
+  );
 };
 
 export const mapLocations = (
@@ -16,6 +18,7 @@ export const mapLocations = (
     const location: Location = new Location(
       apiLocation.id,
       apiLocation.name,
+      false,
       []
     );
 
@@ -61,7 +64,11 @@ const mapAssetOrComponent = (apiAssetOrComponent: any): Asset | Component => {
 
     return component;
   }
-  const asset = new Asset(apiAssetOrComponent.id, apiAssetOrComponent.name);
+  const asset = new Asset(
+    apiAssetOrComponent.id,
+    apiAssetOrComponent.name,
+    false
+  );
 
   return asset;
 };
@@ -69,7 +76,7 @@ const mapAssetOrComponent = (apiAssetOrComponent: any): Asset | Component => {
 export const mapLocationAssets = (
   rootLocations: Location[],
   apiAssets: Record<string, string>[]
-): Array<Location | Asset> => {
+): Array<Location | Asset | Component> => {
   const rootAssetsMap = new Map<string, Array<Component | Asset>>();
   const childrenAssetsMap = new Map<string | null, Array<Asset | Component>>();
 
@@ -104,9 +111,11 @@ export const mapLocationAssets = (
       const components: Component[] = childrenAssetsMap
         .get(item.id)!
         .filter((assetOrComponent) => "sensorType" in assetOrComponent);
-      const subAssets: Asset[] = childrenAssetsMap
+      const subAssets = childrenAssetsMap
         .get(item.id)!
-        .filter((assetOrComponent) => !("sensorType" in assetOrComponent));
+        .filter(
+          (assetOrComponent) => !("sensorType" in assetOrComponent)
+        ) as Asset[];
 
       if (components.length) {
         if (!item.components) {
@@ -133,6 +142,7 @@ export const mapLocationAssets = (
         new Location(
           location.id,
           location.name,
+          false,
           location.children?.length
             ? populateLocationAssets(location.children)
             : undefined,

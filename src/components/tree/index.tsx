@@ -1,26 +1,17 @@
-import { Company, Location, Component } from "../../data/data-models";
-import { ExternalData } from "../../data/data-type";
-import TreeItem from "./tree-item";
 import cn from "classnames";
+import { Company, Node } from "../../data/data-models";
+import { ExternalData } from "../../data/data-type";
 import "./styles.scss";
+import TreeItem from "./tree-item";
 
 interface Props {
   companies: ExternalData<Company[]>;
-  onCompanyClick: (companyId: string) => void;
-  onComponentClick: (component: Component) => void;
+  onNodeClick: (node: Node) => void;
   className?: string;
 }
 
 const Tree: React.FC<Props> = (props) => {
-  const { companies, onCompanyClick, onComponentClick, className } = props;
-
-  const handleNodeClick = (node: Company | Location) => {
-    if (node instanceof Company) {
-      onCompanyClick(node.id);
-    } else if (node instanceof Component) {
-      onComponentClick(node);
-    }
-  };
+  const { companies, onNodeClick, className } = props;
 
   return (
     <ul className={cn("tree-container", className)}>
@@ -28,7 +19,7 @@ const Tree: React.FC<Props> = (props) => {
         <TreeItem
           key={company.id}
           item={company}
-          onClick={handleNodeClick}
+          onClick={onNodeClick}
         ></TreeItem>
       ))}
     </ul>

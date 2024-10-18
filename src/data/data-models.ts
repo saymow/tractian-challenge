@@ -2,7 +2,8 @@ export class Company {
   constructor(
     public readonly id: string,
     public readonly name: string,
-    public readonly locations?: Array<Location | Component>
+    public isOpen: boolean,
+    public locations?: Array<Location | Component>
   ) {}
 }
 
@@ -10,6 +11,7 @@ export class Location {
   constructor(
     public readonly id: string,
     public readonly name: string,
+    public isOpen: boolean,
     public children?: Location[],
     public assets?: Array<Asset | Component>
   ) {}
@@ -19,6 +21,7 @@ export class Asset {
   constructor(
     public readonly id: string,
     public readonly name: string,
+    public isOpen: boolean,
     public children?: Array<Asset>,
     public components?: Array<Component>
   ) {}
