@@ -154,6 +154,8 @@ const TreeComponent: React.FC<Props<Component>> = (props) => {
 const TreeItem: React.FC<Props<TreeNode>> = (props) => {
   const { item, onClick } = props;
 
+  if (!item.isVisible) return null;
+
   if (item instanceof Company) {
     return <TreeCompany item={item} onClick={onClick} />;
   } else if (item instanceof Location) {

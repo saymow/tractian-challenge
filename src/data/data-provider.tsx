@@ -3,73 +3,61 @@ import api from "../api";
 import DataCtx from "./data-context";
 import { mapCompanies, mapLocationAssets, mapLocations } from "./data-mappers";
 import { Asset, Company, Location, Component, Node } from "./data-models";
-import { ExternalData } from "./data-type";
-
-const dfs = (path: Array<Node>, current: Node, target: Node) => {
-  if (current instanceof Component) return false;
-  if (current === target) return true;
-
-  const children: Node[] = [];
-
-  if (current instanceof Company) {
-    children.push(...(current.locations ?? []));
-  } else if (current instanceof Location) {
-    children.push(...(current.children ?? []));
-    children.push(...(current.assets ?? []));
-  } else {
-    children.push(...(current.children ?? []));
-  }
-
-  for (const child of children) {
-    path.push(child);
-    if (dfs(path, child, target)) return true;
-    path.pop();
-  }
-
-  return false;
-};
+import { ExternalData, FilterOptions } from "./data-type";
+import { dfs, filter } from "./data-helpers";
 
 const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [companies, setCompanies] = useState<ExternalData<Company[]>>({});
   const [selectedComponent, setSelectedComponent] = useState<Component>();
 
+  const fetchCompanyDetails = useCallback(
+    async (companyId: string, shouldOpenNode: boolean) => {
+      const [locationsResponse, assetsResponse] = await Promise.all([
+        api.get(`/companies/${companyId}/locations`),
+        api.get(`/companies/${companyId}/assets`),
+      ]);
+      const locationsWithAssets = mapLocationAssets(
+        mapLocations(locationsResponse.data),
+        assetsResponse.data
+      );
+
+      setCompanies((prev) => {
+        const company = prev.data!.find((item) => item.id === companyId)!;
+        const newCompany: Company = new Company(
+          company.id,
+          company.name,
+          shouldOpenNode,
+          true,
+          locationsWithAssets
+        );
+
+        return {
+          ...prev,
+          data: prev.data!.map((item) =>
+            item.id === companyId ? newCompany : item
+          ),
+        };
+      });
+    },
+    []
+  );
+
   const fetchCompanies = useCallback(async () => {
     try {
       setCompanies({ isLoading: true });
+
       const response = await api.get("/companies");
-      setCompanies({ success: true, data: mapCompanies(response.data) });
+      const newCompanies = mapCompanies(response.data);
+
+      setCompanies({ success: true, data: newCompanies });
+
+      await Promise.all(
+        newCompanies.map((company) => fetchCompanyDetails(company.id, false))
+      );
     } catch (err: any) {
       setCompanies({ error: { message: err.message } });
     }
-  }, []);
-
-  const fetchCompanyDetails = useCallback(async (companyId: string) => {
-    const [locationsResponse, assetsResponse] = await Promise.all([
-      api.get(`/companies/${companyId}/locations`),
-      api.get(`/companies/${companyId}/assets`),
-    ]);
-    const locationsWithAssets = mapLocationAssets(
-      mapLocations(locationsResponse.data),
-      assetsResponse.data
-    );
-
-    setCompanies((prev) => {
-      const company = prev.data!.find((item) => item.id === companyId)!;
-      const newCompany: Company = new Company(
-        company.id,
-        company.name,
-        true,
-        locationsWithAssets
-      );
-
-      return {
-        ...prev,
-        data: prev.data!.map((item) =>
-          item.id === companyId ? newCompany : item
-        ),
-      };
-    });
-  }, []);
+  }, [fetchCompanyDetails]);
 
   const updateSelectedComponent = useCallback(
     (component: Component) => {
@@ -90,10 +78,10 @@ const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   /**
    * Efficiently open or close a node.
-   * 
+   *
    * Node's children are rendered only if their array is updated. This improves
    * perfomance, by no re-rendering the entire tree unnecessarily. This helper ensure
-   * that only the ancestors of "node" have their children updated - and therefore updated. 
+   * that only the ancestors of "node" have their children updated - and therefore updated.
    */
   const toggleNode = useCallback(
     (node: Company | Location | Asset, isOpen: boolean) => {
@@ -143,6 +131,13 @@ const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     [toggleNode]
   );
 
+  const filterNodes = useCallback((filters: FilterOptions) => {
+    setCompanies((prev) => {
+      filter(prev.data ?? [], filters);
+      return { ...prev, data: prev.data };
+    });
+  }, []);
+
   return (
     <DataCtx.Provider
       value={{
@@ -150,9 +145,10 @@ const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         selectedComponent,
         fetchCompanies,
         fetchCompanyDetails,
-        updateSelectedComponent,
+        filterNodes,
         openNode,
         closeNode,
+        updateSelectedComponent,
       }}
     >
       {children}

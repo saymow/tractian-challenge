@@ -6,3 +6,7 @@ export interface ExternalData<T> {
     message: string;
   };
 }
+
+export interface FilterOptions {
+  searchText: string;
+}

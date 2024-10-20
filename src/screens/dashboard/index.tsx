@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import debounce from "lodash.debounce";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Card from "../../components/card";
-import Tree from "../../components/tree";
-import useData from "../../data/use-data";
-import "./styles.scss";
 import ComponentView from "../../components/component-view";
 import Panel from "../../components/panel";
 import SearchBar from "../../components/search-bar";
+import Tree from "../../components/tree";
 import { Company, Component, Node } from "../../data/data-models";
+import useData from "../../data/use-data";
+import "./styles.scss";
 
 const Dashboard: React.FC = () => {
   const {
@@ -14,25 +15,37 @@ const Dashboard: React.FC = () => {
     selectedComponent,
     fetchCompanies,
     fetchCompanyDetails,
-    updateSelectedComponent,
     openNode,
     closeNode,
+    filterNodes,
+    updateSelectedComponent,
   } = useData();
   const [searchText, setSearchText] = useState("");
+  const debouncedFilterNodes = useMemo(
+    () => debounce((searchText: string) => filterNodes({ searchText }), 1000),
+    [filterNodes]
+  );
 
   useEffect(() => {
     fetchCompanies();
   }, [fetchCompanies]);
+
+  useEffect(() => {
+    debouncedFilterNodes(searchText);
+  }, [debouncedFilterNodes, searchText]);
 
   const handleNodeClick = useCallback(
     (node: Node) => {
       if (node instanceof Component) {
         updateSelectedComponent(node);
       } else if (node instanceof Company && !node.locations) {
-        fetchCompanyDetails(node.id);
+        fetchCompanyDetails(node.id, true);
       } else {
-        if (node.isOpen) closeNode(node);
-        else openNode(node);
+        if (node.isOpen) {
+          closeNode(node);
+        } else {
+          openNode(node);
+        }
       }
     },
     [closeNode, fetchCompanyDetails, openNode, updateSelectedComponent]

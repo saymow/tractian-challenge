@@ -4,7 +4,7 @@ export const mapCompanies = (
   apiCompanies: Record<string, string>[]
 ): Company[] => {
   return apiCompanies.map(
-    (company) => new Company(company.id, company.name, false)
+    (company) => new Company(company.id, company.name, false, true)
   );
 };
 
@@ -19,6 +19,7 @@ export const mapLocations = (
       apiLocation.id,
       apiLocation.name,
       false,
+      true,
       []
     );
 
@@ -59,7 +60,8 @@ const mapAssetOrComponent = (apiAssetOrComponent: any): Asset | Component => {
       apiAssetOrComponent.sensorId,
       apiAssetOrComponent.sensorType,
       apiAssetOrComponent.status,
-      apiAssetOrComponent.gatewayId
+      apiAssetOrComponent.gatewayId,
+      true
     );
 
     return component;
@@ -67,7 +69,8 @@ const mapAssetOrComponent = (apiAssetOrComponent: any): Asset | Component => {
   const asset = new Asset(
     apiAssetOrComponent.id,
     apiAssetOrComponent.name,
-    false
+    false,
+    true
   );
 
   return asset;
@@ -143,6 +146,7 @@ export const mapLocationAssets = (
           location.id,
           location.name,
           false,
+          true,
           location.children?.length
             ? populateLocationAssets(location.children)
             : undefined,

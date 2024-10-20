@@ -3,6 +3,7 @@ export class Company {
     public readonly id: string,
     public readonly name: string,
     public isOpen: boolean,
+    public isVisible: boolean,
     public locations?: Array<Location | Component>
   ) {}
 }
@@ -12,6 +13,7 @@ export class Location {
     public readonly id: string,
     public readonly name: string,
     public isOpen: boolean,
+    public isVisible: boolean,
     public children?: Location[],
     public assets?: Array<Asset | Component>
   ) {}
@@ -22,6 +24,7 @@ export class Asset {
     public readonly id: string,
     public readonly name: string,
     public isOpen: boolean,
+    public isVisible: boolean,
     public children?: Array<Asset>,
     public components?: Array<Component>
   ) {}
@@ -35,6 +38,7 @@ export class Component {
     public readonly sensorType: string,
     public readonly status: string,
     public readonly gatewayId: string,
+    public isVisible: boolean,
     public selected?: boolean
   ) {}
 }
