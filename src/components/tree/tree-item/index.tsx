@@ -4,6 +4,8 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import cn from "classnames";
 import "./styles.scss";
+import ThunderIcon from "../../icons/Thunder";
+import CircleIcon from "../../icons/Circle";
 
 export type RootNode = Company;
 export type NonRootNode = Location | Asset | Component;
@@ -123,6 +125,15 @@ const TreeComponent: React.FC<Props<Component>> = (props) => {
     onClick(item);
   };
 
+  const icon = useMemo(() => {
+    return (
+      <>
+        {item.status === "alert" && <CircleIcon />}
+        {item.sensorType === "energy" && <ThunderIcon />}
+      </>
+    );
+  }, [item.sensorType, item.status]);
+
   return (
     <li
       className={cn("tree-item", "expandless", "component", {
@@ -132,6 +143,7 @@ const TreeComponent: React.FC<Props<Component>> = (props) => {
       <span onClick={handleClick}>
         <img src="./component.png"></img>
         {item.name}
+        {icon}
       </span>
     </li>
   );
