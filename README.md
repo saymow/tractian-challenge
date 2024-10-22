@@ -2,8 +2,7 @@
 
 ## Demo
 
-<video controls src="https://github.com/saymow/tractian-challenge/blob/master/.github/demo.mp4" title="Title"></video>
-
+https://github.com/user-attachments/assets/11beb9fe-5be3-47d0-b30c-eae1ffa14d0c
 
 ## Improvements
 
