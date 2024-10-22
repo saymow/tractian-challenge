@@ -1,0 +1,32 @@
+{
+  "root": [
+    "./src/app.tsx",
+    "./src/main.tsx",
+    "./src/vite-env.d.ts",
+    "./src/api/index.ts",
+    "./src/components/button/index.tsx",
+    "./src/components/card/index.tsx",
+    "./src/components/component-view/index.tsx",
+    "./src/components/header/index.tsx",
+    "./src/components/icons/alert/index.tsx",
+    "./src/components/icons/circle/index.tsx",
+    "./src/components/icons/energy/index.tsx",
+    "./src/components/icons/search/index.tsx",
+    "./src/components/icons/thunder/index.tsx",
+    "./src/components/layout/index.tsx",
+    "./src/components/panel/index.tsx",
+    "./src/components/panel/panel-header/index.tsx",
+    "./src/components/search-bar/index.tsx",
+    "./src/components/tree/index.tsx",
+    "./src/components/tree/tree-item/index.tsx",
+    "./src/data/data-context.ts",
+    "./src/data/data-helpers.ts",
+    "./src/data/data-mappers.ts",
+    "./src/data/data-models.ts",
+    "./src/data/data-provider.tsx",
+    "./src/data/data-type.ts",
+    "./src/data/use-data.ts",
+    "./src/screens/dashboard/index.tsx"
+  ],
+  "version": "5.6.2"
+}
