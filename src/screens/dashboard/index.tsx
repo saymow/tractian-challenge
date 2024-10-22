@@ -12,6 +12,7 @@ import Button from "../../components/button";
 import EnergyIcon from "../../components/icons/Energy";
 import AlertIcon from "../../components/icons/Alert";
 import { FilterOptions } from "../../data/data-type";
+import { areFiltersApplied } from "../../data/data-helpers";
 
 const Dashboard: React.FC = () => {
   const {
@@ -49,14 +50,13 @@ const Dashboard: React.FC = () => {
       } else if (node instanceof Company && !node.locations) {
         fetchCompanyDetails(node.id, true);
       } else {
-        if (node.isOpen) {
-          closeNode(node);
-        } else {
-          openNode(node);
-        }
+        if (areFiltersApplied(filters)) return;
+
+        if (node.isOpen) closeNode(node);
+        else openNode(node);
       }
     },
-    [closeNode, fetchCompanyDetails, openNode, updateSelectedComponent]
+    [closeNode, fetchCompanyDetails, filters, openNode, updateSelectedComponent]
   );
 
   const handleSearchText = (searchText: string) => {

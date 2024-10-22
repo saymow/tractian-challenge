@@ -1,6 +1,11 @@
 import { Node, Company, Location, Component, Asset } from "./data-models";
 import { FilterOptions } from "./data-type";
 
+export const areFiltersApplied = (filters: FilterOptions) =>
+  filters.searchText.length > 0 ||
+  !!filters.criticalSensors ||
+  !!filters.energySensors;
+
 const filterNode = (node: Node, filters: FilterOptions) => {
   const children: Node[] = [];
 
@@ -29,11 +34,7 @@ const filterNode = (node: Node, filters: FilterOptions) => {
   }
 
   if ("isOpen" in node) {
-    node.isOpen =
-      node.isVisible &&
-      (filters.searchText.length > 0 ||
-        !!filters.criticalSensors ||
-        !!filters.energySensors);
+    node.isOpen = node.isVisible && areFiltersApplied(filters);
   }
 
   return node.isVisible;
