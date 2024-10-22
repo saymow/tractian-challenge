@@ -141,7 +141,9 @@ const TreeComponent: React.FC<Props<Component>> = (props) => {
       })}
     >
       <span onClick={handleClick}>
-        <img src="./component.png"></img>
+        <img
+          src={item.selected ? "./component-active.png" : "./component.png"}
+        ></img>
         {item.name}
         {icon}
       </span>
