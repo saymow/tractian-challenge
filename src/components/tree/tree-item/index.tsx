@@ -26,18 +26,6 @@ const TreeCompany: React.FC<Props<Company>> = (props) => {
     else return <ExpandMoreIcon />;
   }, [item.isOpen]);
 
-  const children = useMemo(() => {
-    if (!item.isOpen || !item.locations) return null;
-
-    return (
-      <ul className="subtree-container">
-        {item.locations.map((subItem) => (
-          <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
-        ))}
-      </ul>
-    );
-  }, [item.isOpen, item.locations, onClick]);
-
   return (
     <li className={cn("tree-item", { expandless: !expandIcon })}>
       <span onClick={handleClick}>
@@ -45,7 +33,13 @@ const TreeCompany: React.FC<Props<Company>> = (props) => {
         <img src={"./location.png"}></img>
         {item.name}
       </span>
-      {children}
+      <ul className="subtree-container">
+        {!item.isOpen || !item.locations
+          ? null
+          : item.locations.map((subItem) => (
+              <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
+            ))}
+      </ul>
     </li>
   );
 };
@@ -63,21 +57,6 @@ const TreeLocation: React.FC<Props<Location>> = (props) => {
     else return <ExpandMoreIcon />;
   }, [item.isOpen, item.assets, item.children]);
 
-  const children = useMemo(() => {
-    if (!item.isOpen || (!item.assets && !item.children)) return null;
-
-    return (
-      <ul className="subtree-container">
-        {(item.children ?? []).map((subItem) => (
-          <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
-        ))}
-        {(item.assets ?? []).map((subItem) => (
-          <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
-        ))}
-      </ul>
-    );
-  }, [item.isOpen, item.assets, item.children, onClick]);
-
   return (
     <li className={cn("tree-item", { expandless: !expandIcon })}>
       <span onClick={handleClick}>
@@ -85,7 +64,18 @@ const TreeLocation: React.FC<Props<Location>> = (props) => {
         <img src={"./location.png"}></img>
         {item.name}
       </span>
-      {children}
+      <ul className="subtree-container">
+        {!item.isOpen || (!item.assets && !item.children) ? null : (
+          <>
+            {(item.children ?? []).map((subItem) => (
+              <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
+            ))}
+            {(item.assets ?? []).map((subItem) => (
+              <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
+            ))}
+          </>
+        )}
+      </ul>
     </li>
   );
 };
@@ -103,21 +93,6 @@ const TreeAsset: React.FC<Props<Asset>> = (props) => {
     else return <ExpandMoreIcon />;
   }, [item.children, item.components, item.isOpen]);
 
-  const children = useMemo(() => {
-    if (!item.isOpen || (!item.components && !item.children)) return null;
-
-    return (
-      <ul className="subtree-container">
-        {(item.children ?? []).map((subItem) => (
-          <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
-        ))}
-        {(item.components ?? []).map((subItem) => (
-          <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
-        ))}
-      </ul>
-    );
-  }, [item.isOpen, item.components, item.children, onClick]);
-
   return (
     <li className={cn("tree-item", { expandless: !expandIcon })}>
       <span onClick={handleClick}>
@@ -125,7 +100,18 @@ const TreeAsset: React.FC<Props<Asset>> = (props) => {
         <img src={"./asset.png"}></img>
         {item.name}
       </span>
-      {children}
+      <ul className="subtree-container">
+        {!item.isOpen || (!item.components && !item.children) ? null : (
+          <>
+            {(item.children ?? []).map((subItem) => (
+              <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
+            ))}
+            {(item.components ?? []).map((subItem) => (
+              <TreeItem key={subItem.id} item={subItem} onClick={onClick} />
+            ))}
+          </>
+        )}
+      </ul>
     </li>
   );
 };

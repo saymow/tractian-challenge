@@ -8,6 +8,10 @@ import Tree from "../../components/tree";
 import { Company, Component, Node } from "../../data/data-models";
 import useData from "../../data/use-data";
 import "./styles.scss";
+import Button from "../../components/button";
+import EnergyIcon from "../../components/icons/Energy";
+import AlertIcon from "../../components/icons/Alert";
+import { FilterOptions } from "../../data/data-type";
 
 const Dashboard: React.FC = () => {
   const {
@@ -20,9 +24,13 @@ const Dashboard: React.FC = () => {
     filterNodes,
     updateSelectedComponent,
   } = useData();
-  const [searchText, setSearchText] = useState("");
+  const [filters, setFilters] = useState<FilterOptions>({
+    searchText: "",
+    energySensors: false,
+    criticalSensors: false,
+  });
   const debouncedFilterNodes = useMemo(
-    () => debounce((searchText: string) => filterNodes({ searchText }), 1000),
+    () => debounce((filters: FilterOptions) => filterNodes(filters), 1000),
     [filterNodes]
   );
 
@@ -31,8 +39,8 @@ const Dashboard: React.FC = () => {
   }, [fetchCompanies]);
 
   useEffect(() => {
-    debouncedFilterNodes(searchText);
-  }, [debouncedFilterNodes, searchText]);
+    debouncedFilterNodes(filters);
+  }, [debouncedFilterNodes, filters]);
 
   const handleNodeClick = useCallback(
     (node: Node) => {
@@ -51,23 +59,59 @@ const Dashboard: React.FC = () => {
     [closeNode, fetchCompanyDetails, openNode, updateSelectedComponent]
   );
 
+  const handleSearchText = (searchText: string) => {
+    setFilters((prev) => ({ ...prev, searchText }));
+  };
+
+  const handleToggleEnergySensorsFilter = () => {
+    setFilters((prev) => ({ ...prev, energySensors: !prev.energySensors }));
+  };
+
+  const handleToggleCriticalSensorsFilter = () => {
+    setFilters((prev) => ({ ...prev, criticalSensors: !prev.criticalSensors }));
+  };
+
   return (
-    <Panel className="dashboard-container">
-      <Card className="visualization-container">
-        <SearchBar
-          value={searchText}
-          onChange={setSearchText}
-          placeholder="Buscar Ativo ou Local"
-        />
-        <Tree
-          companies={companies}
-          onNodeClick={handleNodeClick}
-          className="visualization"
-        />
-      </Card>
-      <Card>
-        {selectedComponent && <ComponentView component={selectedComponent} />}
-      </Card>
+    <Panel
+      className="dashboard-container"
+      header={{
+        title: "Ativos",
+        subTitle: "Apex Unit",
+        commandElement: (
+          <>
+            <Button
+              Icon={EnergyIcon}
+              text="Sensor de Energia"
+              active={filters.energySensors}
+              onClick={handleToggleEnergySensorsFilter}
+            />
+            <Button
+              Icon={AlertIcon}
+              text="Crítico"
+              active={filters.criticalSensors}
+              onClick={handleToggleCriticalSensorsFilter}
+            />
+          </>
+        ),
+      }}
+    >
+      <section>
+        <Card className="visualization-container">
+          <SearchBar
+            value={filters.searchText}
+            onChange={handleSearchText}
+            placeholder="Buscar Ativo ou Local"
+          />
+          <Tree
+            companies={companies}
+            onNodeClick={handleNodeClick}
+            className="visualization"
+          />
+        </Card>
+        <Card>
+          {selectedComponent && <ComponentView component={selectedComponent} />}
+        </Card>
+      </section>
     </Panel>
   );
 };

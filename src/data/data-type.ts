@@ -9,4 +9,6 @@ export interface ExternalData<T> {
 
 export interface FilterOptions {
   searchText: string;
+  energySensors?: boolean; 
+  criticalSensors?: boolean; 
 }

@@ -22,3 +22,13 @@ ul {
   padding: 0;
   box-sizing: border-box;
 }
+
+button {
+  cursor: pointer;
+  background: #fff;
+  border: none;
+}
+
+button:hover {
+  outline: none;
+}

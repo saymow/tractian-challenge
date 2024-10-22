@@ -1,0 +1,20 @@
+.button {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 4px;
+
+  border: 1px solid #d8dfe6;
+
+  color: #77818c;
+  font-weight: 600;
+  line-height: 20px;
+
+  &[data-active="true"] {
+    background: #2188ff;
+    color: #fff;
+    border-color: #2188ff;
+  }
+}

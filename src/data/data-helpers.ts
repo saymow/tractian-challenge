@@ -25,7 +25,7 @@ export const dfs = (path: Array<Node>, current: Node, target: Node) => {
   return false;
 };
 
-const filterNode = (node: Node, options: FilterOptions) => {
+const filterNode = (node: Node, filters: FilterOptions) => {
   const children: Node[] = [];
 
   if (node instanceof Company) {
@@ -39,14 +39,25 @@ const filterNode = (node: Node, options: FilterOptions) => {
   }
 
   node.isVisible =
-    !(node instanceof Company) && node.name.includes(options.searchText);
+    !(node instanceof Company) &&
+    node.name.includes(filters.searchText) &&
+    (filters.criticalSensors
+      ? node instanceof Component && node.status === "alert"
+      : true) &&
+    (filters.energySensors
+      ? node instanceof Component && node.sensorType === "energy"
+      : true);
 
   for (const child of children) {
-    node.isVisible = filterNode(child, options) || node.isVisible;
+    node.isVisible = filterNode(child, filters) || node.isVisible;
   }
 
   if ("isOpen" in node) {
-    node.isOpen = node.isVisible && options.searchText.length > 0;
+    node.isOpen =
+      node.isVisible &&
+      (filters.searchText.length > 0 ||
+        !!filters.criticalSensors ||
+        !!filters.energySensors);
   }
 
   return node.isVisible;
