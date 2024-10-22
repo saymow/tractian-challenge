@@ -1,30 +1,6 @@
 import { Node, Company, Location, Component, Asset } from "./data-models";
 import { FilterOptions } from "./data-type";
 
-export const dfs = (path: Array<Node>, current: Node, target: Node) => {
-  if (current instanceof Component) return false;
-  if (current === target) return true;
-
-  const children: Node[] = [];
-
-  if (current instanceof Company) {
-    children.push(...(current.locations ?? []));
-  } else if (current instanceof Location) {
-    children.push(...(current.children ?? []));
-    children.push(...(current.assets ?? []));
-  } else {
-    children.push(...(current.children ?? []));
-  }
-
-  for (const child of children) {
-    path.push(child);
-    if (dfs(path, child, target)) return true;
-    path.pop();
-  }
-
-  return false;
-};
-
 const filterNode = (node: Node, filters: FilterOptions) => {
   const children: Node[] = [];
 

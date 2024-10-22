@@ -2,9 +2,9 @@ import { ReactNode, useCallback, useState } from "react";
 import api from "../api";
 import DataCtx from "./data-context";
 import { mapCompanies, mapLocationAssets, mapLocations } from "./data-mappers";
-import { Asset, Company, Location, Component, Node } from "./data-models";
+import { Asset, Company, Location, Component } from "./data-models";
 import { ExternalData, FilterOptions } from "./data-type";
-import { dfs, filter } from "./data-helpers";
+import { filter } from "./data-helpers";
 
 const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [companies, setCompanies] = useState<ExternalData<Company[]>>({});
@@ -76,43 +76,10 @@ const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     [selectedComponent, setSelectedComponent]
   );
 
-  /**
-   * Efficiently open or close a node.
-   *
-   * Node's children are rendered only if their array is updated. This improves
-   * perfomance, by no re-rendering the entire tree unnecessarily. This helper ensure
-   * that only the ancestors of "node" have their children updated - and therefore updated.
-   */
   const toggleNode = useCallback(
     (node: Company | Location | Asset, isOpen: boolean) => {
-      setCompanies((prev) => {
-        const path: Node[] = [];
-
-        for (const company of prev.data!) {
-          path.push(company);
-          if (!dfs(path, company, node)) path.pop();
-        }
-
-        // The last node is the node we are toggling, no need to update its children.
-        path.pop();
-
-        while (path.length) {
-          const item = path.pop();
-
-          if (item instanceof Company) {
-            item.locations = item.locations!.slice();
-          } else if (item instanceof Location) {
-            if (item.assets) item.assets = item.assets!.slice();
-            if (item.children) item.children = item.children!.slice();
-          } else if (item instanceof Asset) {
-            item.children = item.children!.slice();
-          }
-        }
-
-        node.isOpen = isOpen;
-
-        return { ...prev, data: prev.data!.slice() };
-      });
+      node.isOpen = isOpen;
+      setCompanies((prev) => ({ ...prev }));
     },
     []
   );
